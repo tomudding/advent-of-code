@@ -1,10 +1,13 @@
 extern crate aoc_function_registry;
 
-use proc_macro::TokenStream;
-use quote::quote;
-use syn::{parse_macro_input, ItemFn, LitStr};
 use darling::{FromMeta, Error};
 use darling::ast::NestedMeta;
+use proc_macro::TokenStream;
+use quote::quote;
+use std::fs::DirEntry;
+use std::path::PathBuf;
+use proc_macro2::Span;
+use syn::{parse_macro_input, Ident, ItemFn, LitStr};
 
 #[derive(Debug, FromMeta)]
 struct AoCAttributes {
@@ -46,6 +49,38 @@ pub fn aoc(args: TokenStream, input: TokenStream) -> TokenStream {
                 registry.insert(#registry_key.to_string(), #fn_name as fn() -> String);
             };
         };
+    };
+
+    TokenStream::from(expanded)
+}
+
+#[proc_macro]
+pub fn include_year_modules(input: TokenStream) -> TokenStream {
+    let year = parse_macro_input!(input as LitStr).value();
+
+    let mut modules = Vec::new();
+    for entry in std::fs::read_dir(format!("src/{}", year)).unwrap() {
+        let entry: DirEntry = entry.unwrap();
+        let path: PathBuf = entry.path();
+
+        if path.is_file() && path.extension().unwrap_or_default() == "rs" {
+            let file_name: &str = path.file_stem().unwrap().to_str().unwrap();
+            modules.push((file_name.to_string(), year.clone()));
+        }
+    }
+
+    let module_declarations = modules.iter().map(|(module, year)| {
+        let ident: Ident = Ident::new(&format!("year{}_{}", year, module), Span::call_site());
+        let path: String = format!("{}/{}.rs", year, module);
+
+        quote! {
+            #[path = #path]
+            pub mod #ident;
+        }
+    });
+
+    let expanded = quote! {
+        #(#module_declarations)*
     };
 
     TokenStream::from(expanded)

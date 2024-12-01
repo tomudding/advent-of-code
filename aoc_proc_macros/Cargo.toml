@@ -1,6 +1,6 @@
 [package]
-name = "aoc_macros"
-version = "0.0.1"
+name = "aoc_proc_macros"
+version = "0.0.2"
 authors = ["Tom Udding <tomudding@users.noreply.github.com>"]
 edition = "2021"
 
@@ -9,6 +9,7 @@ aoc_function_registry = { path = "../aoc_function_registry" }
 quote = "1.0.37"
 syn = "2.0.90"
 darling = "0.20.10"
+proc-macro2 = "1.0.92"
 
 [lib]
 proc-macro = true

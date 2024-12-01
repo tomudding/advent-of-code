@@ -1,6 +1,5 @@
 extern crate aoc_function_registry;
-extern crate aoc_macros;
-extern crate aoc_module_loader;
+extern crate aoc_proc_macros;
 
 use aoc_function_registry::get_registry;
 use std::{env, io};
@@ -10,8 +9,8 @@ use std::path::Path;
 use chrono::{Datelike, Utc};
 
 // Dynamically load the solvers.
-aoc_module_loader::include_year_modules!("2023");
-aoc_module_loader::include_year_modules!("2024");
+aoc_proc_macros::include_year_modules!("2023");
+aoc_proc_macros::include_year_modules!("2024");
 
 fn main() {
     let args: Vec<String> = env::args().collect();

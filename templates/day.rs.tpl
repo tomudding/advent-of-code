@@ -1,6 +1,6 @@
 // DO NOT EDIT - AOC
 use aoc_function_registry::get_registry;
-use aoc_macros::aoc;
+use aoc_proc_macros::aoc;
 // END DO NOT EDIT - AOC
 // DO NOT EDIT - DEFAULTS
 use std::fs::File;

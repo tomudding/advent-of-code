@@ -10,6 +10,5 @@ path = "src/main.rs"
 
 [dependencies]
 aoc_function_registry = { path = "./aoc_function_registry" }
-aoc_macros = { path = "./aoc_macros" }
-aoc_module_loader = { path = "./aoc_module_loader" }
+aoc_proc_macros = { path = "aoc_proc_macros" }
 chrono = "0.4.38"

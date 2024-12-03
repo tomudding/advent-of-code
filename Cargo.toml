@@ -12,3 +12,6 @@ path = "src/main.rs"
 aoc_function_registry = { path = "./aoc_function_registry" }
 aoc_proc_macros = { path = "aoc_proc_macros" }
 chrono = "0.4.38"
+
+# For the actual puzzles:
+regex = "1.11.1"

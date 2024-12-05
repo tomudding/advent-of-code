@@ -8,7 +8,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 // DO NOT EDIT - DEFAULTS
 
-fn count_normal_occurrences(grid: &Vec<Vec<char>>) -> usize {
+fn count_normal_occurrences(grid: &[Vec<char>]) -> usize {
     let directions: Vec<(i32, i32)> = vec![
         (0, 1),   // ->
         (1, 0),   // \/
@@ -51,7 +51,7 @@ fn count_normal_occurrences(grid: &Vec<Vec<char>>) -> usize {
     count
 }
 
-fn count_x_mas_occurrences(grid: &Vec<Vec<char>>) -> usize {
+fn count_x_mas_occurrences(grid: &[Vec<char>]) -> usize {
     let mut count: usize = 0;
 
     for row in 1..grid.len() - 1 {
@@ -110,10 +110,8 @@ fn parse_input() -> Vec<Vec<char>> {
     let mut grid: Vec<Vec<char>> = Vec::new();
 
     if let Ok(lines) = read_lines(get_file_path()) {
-        for line in lines {
-            if let Ok(value) = line {
-                grid.push(value.chars().collect());
-            }
+        for value in lines.map_while(Result::ok) {
+            grid.push(value.chars().collect());
         }
     }
 

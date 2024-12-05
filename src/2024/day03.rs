@@ -41,13 +41,11 @@ fn parse_input() -> i32 {
     let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
 
     if let Ok(lines) = read_lines(get_file_path()) {
-        for line in lines {
-            if let Ok(value) = line {
-                for cap in re.captures_iter(&value) {
-                    let x: i32 = cap[1].parse().unwrap();
-                    let y: i32 = cap[2].parse().unwrap();
-                    total_sum += x * y;
-                }
+        for value in lines.map_while(Result::ok) {
+            for cap in re.captures_iter(&value) {
+                let x: i32 = cap[1].parse().unwrap();
+                let y: i32 = cap[2].parse().unwrap();
+                total_sum += x * y;
             }
         }
     }
@@ -65,56 +63,54 @@ fn parse_input_with_conditions() -> i32 {
     let re_dont = Regex::new(r"don't\(\)").unwrap();
 
     if let Ok(lines) = read_lines(get_file_path()) {
-        for line in lines {
-            if let Ok(value) = line {
-                // We cannot just capture everything with the regex and determine the enabled state,
-                // we have to go through each line and determine what state we are in.
-                let mut current_position = 0;
+        for value in lines.map_while(Result::ok) {
+            // We cannot just capture everything with the regex and determine the enabled state,
+            // we have to go through each line and determine what state we are in.
+            let mut current_position = 0;
 
-                while current_position < value.len() {
-                    // If we find a do(), set mul enabled and skip forward.
-                    if let Some(cap) = re_do.find(&value[current_position..]) {
-                        // We need to check that this is actually at the start of where we are now,
-                        // as it may happen that a mul() appears before this (such as in the example
-                        // that is given).
-                        if cap.start() == 0 {
-                            mul_enabled = true;
-                            current_position += cap.end();
+            while current_position < value.len() {
+                // If we find a do(), set mul enabled and skip forward.
+                if let Some(cap) = re_do.find(&value[current_position..]) {
+                    // We need to check that this is actually at the start of where we are now,
+                    // as it may happen that a mul() appears before this (such as in the example
+                    // that is given).
+                    if cap.start() == 0 {
+                        mul_enabled = true;
+                        current_position += cap.end();
 
-                            continue;
-                        }
+                        continue;
                     }
-
-                    // If we find a don't(), set mul disabled and skip forward.
-                    if let Some(cap) = re_dont.find(&value[current_position..]) {
-                        // We need to check that this is actually at the start of where we are now,
-                        // as it may happen that a mul() appears before this (such as in the example
-                        // that is given).
-                        if cap.start() == 0 {
-                            mul_enabled = false;
-                            current_position += cap.end();
-
-                            continue;
-                        }
-                    }
-
-                    // If we find a mul(), do the multiplication only if mul is enabled.
-                    if let Some(cap) = re_mul.captures(&value[current_position..]) {
-                        // We need to check that this is actually at the start of where we are now,
-                        // as it may happen that a do() or don't() appears before this influencing
-                        // the mul_enabled state.
-                        if cap.get(0).unwrap().start() == 0 && mul_enabled {
-                            let x: i32 = cap[1].parse().unwrap();
-                            let y: i32 = cap[2].parse().unwrap();
-                            total_sum += x * y;
-                            current_position += cap.get(0).unwrap().end();
-
-                            continue;
-                        }
-                    }
-
-                    current_position += 1;
                 }
+
+                // If we find a don't(), set mul disabled and skip forward.
+                if let Some(cap) = re_dont.find(&value[current_position..]) {
+                    // We need to check that this is actually at the start of where we are now,
+                    // as it may happen that a mul() appears before this (such as in the example
+                    // that is given).
+                    if cap.start() == 0 {
+                        mul_enabled = false;
+                        current_position += cap.end();
+
+                        continue;
+                    }
+                }
+
+                // If we find a mul(), do the multiplication only if mul is enabled.
+                if let Some(cap) = re_mul.captures(&value[current_position..]) {
+                    // We need to check that this is actually at the start of where we are now,
+                    // as it may happen that a do() or don't() appears before this influencing
+                    // the mul_enabled state.
+                    if cap.get(0).unwrap().start() == 0 && mul_enabled {
+                        let x: i32 = cap[1].parse().unwrap();
+                        let y: i32 = cap[2].parse().unwrap();
+                        total_sum += x * y;
+                        current_position += cap.get(0).unwrap().end();
+
+                        continue;
+                    }
+                }
+
+                current_position += 1;
             }
         }
     }

@@ -8,7 +8,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 // DO NOT EDIT - DEFAULTS
 
-fn is_safe_report(report: &Vec<i32>) -> bool {
+fn is_safe_report(report: &[i32]) -> bool {
     if report.len() < 2 {
         return false;
     }
@@ -35,9 +35,9 @@ fn is_safe_report(report: &Vec<i32>) -> bool {
     is_increasing || is_decreasing
 }
 
-fn is_safe_with_dampener(report: &Vec<i32>) -> bool {
+fn is_safe_with_dampener(report: &[i32]) -> bool {
     for i in 0..report.len() {
-        let mut modified_report = report.clone();
+        let mut modified_report = report.to_owned();
         modified_report.remove(i);
 
         if is_safe_report(&modified_report) {
@@ -82,14 +82,12 @@ fn parse_input() -> Vec<Vec<i32>> {
     let mut reports: Vec<Vec<i32>> = Vec::new();
 
     if let Ok(lines) = read_lines(get_file_path()) {
-        for line in lines {
-            if let Ok(value) = line {
-                let levels: Vec<i32> = value.split_whitespace()
-                    .map(|s| s.parse().unwrap())
-                    .collect();
+        for value in lines.map_while(Result::ok) {
+            let levels: Vec<i32> = value.split_whitespace()
+                .map(|s| s.parse().unwrap())
+                .collect();
 
-                reports.push(levels);
-            }
+            reports.push(levels);
         }
     }
 

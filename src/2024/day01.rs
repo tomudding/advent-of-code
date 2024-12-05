@@ -58,14 +58,12 @@ fn parse_input() -> (Vec<i32>, Vec<i32>) {
     let mut right_list: Vec<i32> = Vec::new();
 
     if let Ok(lines) = read_lines(get_file_path()) {
-        for line in lines {
-            if let Ok(value) = line {
-                let parts: Vec<i32> = value.split_whitespace()
-                    .map(|s| s.parse().unwrap())
-                    .collect();
-                left_list.push(parts[0]);
-                right_list.push(parts[1]);
-            }
+        for value in lines.map_while(Result::ok) {
+            let parts: Vec<i32> = value.split_whitespace()
+                .map(|s| s.parse().unwrap())
+                .collect();
+            left_list.push(parts[0]);
+            right_list.push(parts[1]);
         }
     }
 

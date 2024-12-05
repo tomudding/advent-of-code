@@ -34,10 +34,8 @@ where P: AsRef<Path>, {
 
 fn parse_input() -> todo!() {
     if let Ok(lines) = read_lines(get_file_path()) {
-        for line in lines {
-            if let Ok(value) = line {
-                todo!();
-            }
+        for value in lines.map_while(Result::ok) {
+            todo!();
         }
     }
 

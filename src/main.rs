@@ -110,8 +110,6 @@ fn create(year: &str, day: &str) {
     println!("Created file: {}", paths[0].display());
     println!("Created file: {}", paths[1].display());
     println!("Created file: {}", paths[2].display());
-
-    return
 }
 
 fn check_file_existence(file_path: &Path) -> bool {

@@ -2,7 +2,7 @@ extern crate aoc_function_registry;
 extern crate aoc_proc_macros;
 
 use aoc_function_registry::get_registry;
-use std::{env, io};
+use std::env::args;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
@@ -13,7 +13,7 @@ aoc_proc_macros::include_year_modules!("2023");
 aoc_proc_macros::include_year_modules!("2024");
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args: Vec<String> = args().collect();
 
     if args.len() < 2 {
         eprintln!("Usage:");
@@ -35,9 +35,7 @@ fn main() {
                 return;
             }
 
-            if let Err(e) = create(&args[2], &args[3]) {
-                eprintln!("Error creating file: {}", e);
-            }
+            create(&args[2], &args[3]);
         }
         "solve" => {
             if args.len() < 4 {
@@ -60,7 +58,7 @@ fn list() {
     });
 }
 
-fn create(year: &str, day: &str) -> io::Result<()> {
+fn create(year: &str, day: &str) {
     let day_number: u32 = day.parse().unwrap();
     let day_formatted: String = format!("day{:02}", day_number);
 
@@ -73,33 +71,56 @@ fn create(year: &str, day: &str) -> io::Result<()> {
 
     if !(2015..=current_year).contains(&year.parse::<i32>().unwrap()) {
         eprintln!("Year must be between 2015 and {}.", current_year);
-        return Ok(());
+        return;
     }
 
     if !(1..=25).contains(&day_number) {
         eprintln!("Day must be between 1 and 25.");
-        return Ok(());
+        return;
     }
 
-    let template_path = "./templates/day.rs.tpl";
-    let mut template_file = File::open(template_path)?;
-    let mut template_content = String::new();
-    template_file.read_to_string(&mut template_content)?;
+    let mut template_file: File = File::open("./templates/day.rs.tpl").expect("Unable to open template file");
+    let mut template_content: String = String::new();
+    template_file.read_to_string(&mut template_content).expect("Unable to read template file");
 
-    let content = template_content.replace("{YEAR}", year).replace("{DAY}", &day_formatted);
+    let content: String = template_content.replace("{YEAR}", year).replace("{DAY}", &day_formatted);
 
-    let file_path = format!("./src/{}/{}.rs", year, day_formatted);
-    let path = Path::new(&file_path);
-    if path.exists() {
-        eprintln!("File {} already exists.", file_path);
-        return Ok(());
+    let src_path_str: String = format!("./src/{}/{}.rs", year, day_formatted);
+    let input_example_path_str: String = format!("./inputs/{}/{}-example.txt", year, day_formatted);
+    let input_path_str: String = format!("./inputs/{}/{}.txt", year, day_formatted);
+
+    let paths: [&Path; 3] = [
+        Path::new(&src_path_str),
+        Path::new(&input_example_path_str),
+        Path::new(&input_path_str),
+    ];
+
+    for path in &paths {
+        if check_file_existence(path) {
+            return;
+        }
     }
 
-    let mut file = File::create(path)?;
-    file.write_all(content.as_bytes())?;
-    println!("Created file: {}", file_path);
+    let mut src_file = File::create(paths[0]).expect("Unable to create src file");
+    src_file.write_all(content.as_bytes()).expect("Unable to write template content");
 
-    Ok(())
+    File::create(paths[1]).expect("Unable to create input example file");
+    File::create(paths[2]).expect("Unable to create input file");
+
+    println!("Created file: {}", paths[0].display());
+    println!("Created file: {}", paths[1].display());
+    println!("Created file: {}", paths[2].display());
+
+    return
+}
+
+fn check_file_existence(file_path: &Path) -> bool {
+    if file_path.exists() {
+        eprintln!("File {} already exists...", file_path.display());
+        true
+    } else {
+        false
+    }
 }
 
 fn run(args: &[String]) {

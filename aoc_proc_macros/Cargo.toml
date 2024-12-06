@@ -5,7 +5,7 @@ authors = ["Tom Udding <tomudding@users.noreply.github.com>"]
 edition = "2021"
 
 [dependencies]
-aoc_function_registry = { path = "../aoc_function_registry" }
+aoc_shared_functions = { path = "../aoc_shared_functions" }
 quote = "1.0.37"
 syn = "2.0.90"
 darling = "0.20.10"

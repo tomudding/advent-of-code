@@ -1,7 +1,7 @@
-extern crate aoc_function_registry;
+extern crate aoc_shared_functions;
 extern crate aoc_proc_macros;
 
-use aoc_function_registry::get_registry;
+use aoc_shared_functions::get_registry;
 use std::env::args;
 use std::fs::File;
 use std::io::{Read, Write};

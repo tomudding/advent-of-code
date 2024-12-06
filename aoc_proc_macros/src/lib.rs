@@ -1,4 +1,4 @@
-extern crate aoc_function_registry;
+extern crate aoc_shared_functions;
 
 use darling::{FromMeta, Error};
 use darling::ast::NestedMeta;

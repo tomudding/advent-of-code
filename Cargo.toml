@@ -9,8 +9,8 @@ name = "aoc"
 path = "src/main.rs"
 
 [dependencies]
-aoc_function_registry = { path = "./aoc_function_registry" }
-aoc_proc_macros = { path = "aoc_proc_macros" }
+aoc_shared_functions = { path = "./aoc_shared_functions" }
+aoc_proc_macros = { path = "./aoc_proc_macros" }
 chrono = "0.4.38"
 
 # For the actual puzzles:

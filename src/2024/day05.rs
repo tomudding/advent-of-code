@@ -1,12 +1,7 @@
 // DO NOT EDIT - AOC
-use aoc_function_registry::get_registry;
 use aoc_proc_macros::aoc;
+use aoc_shared_functions::{get_registry, read_lines};
 // END DO NOT EDIT - AOC
-// DO NOT EDIT - DEFAULTS
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
-// DO NOT EDIT - DEFAULTS
 
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -80,12 +75,6 @@ fn part2() -> String {
 
 fn get_file_path() -> String {
     format!("./inputs/2024/day05{}.txt", if cfg!(test) { "-example" } else { "" })
-}
-
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where P: AsRef<Path>, {
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
 }
 
 fn parse_input() -> (Vec<(usize, usize)>, Vec<Vec<usize>>) {

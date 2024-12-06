@@ -10,31 +10,36 @@ use std::path::Path;
 
 use std::collections::HashSet;
 
-fn predict_guard_path(map: &[Vec<char>], initial_position: Option<(i32, i32)>) -> (HashSet<(i32, i32)>, bool) {
+fn predict_guard_path(map: &[Vec<char>], initial_position: Option<(i16, i16)>) -> (HashSet<(i16, i16)>, bool) {
     // The possible directions, ordered such that you can always take a right turn.
-    let directions: [(i32, i32); 4] = [
+    let directions: [(i16, i16); 4] = [
         (0, -1), // ^
         (1, 0),  // >
         (0, 1),  // v
         (-1, 0), // <
     ];
 
-    let mut visited_positions: HashSet<(i32, i32)> = HashSet::new();
-    let mut loop_detection: HashSet<((i32, i32), i32)> = HashSet::new();
+    let mut visited_positions: HashSet<(i16, i16)> = HashSet::new();
+    let mut loop_detection: HashSet<((i16, i16), i16)> = HashSet::new();
 
     // We use the `Option` for `initial_position` to determine whether we are doing part 1 or 2.
-    let mut current_position: (i32, i32) = initial_position.unwrap_or_else(|| get_start(map));
-    let mut current_direction: i32 = 0;
+    let mut current_position: (i16, i16) = initial_position.unwrap_or_else(|| get_start(map));
+    let mut current_direction: i16 = 0;
 
     loop {
-        visited_positions.insert(current_position);
-        loop_detection.insert((current_position, current_direction));
+        if initial_position.is_none() {
+            // Part 1
+            visited_positions.insert(current_position);
+        } else {
+            // Part 2
+            loop_detection.insert((current_position, current_direction));
+        }
 
         let (dx, dy) = directions[current_direction as usize];
-        let new_position: (i32, i32) = (current_position.0 + dx, current_position.1 + dy);
+        let new_position: (i16, i16) = (current_position.0 + dx, current_position.1 + dy);
 
         // Check if guard will leave the map.
-        if new_position.0 < 0 || new_position.1 < 0 || new_position.0 >= map[0].len() as i32 || new_position.1 >= map.len() as i32 {
+        if new_position.0 < 0 || new_position.1 < 0 || new_position.0 >= map[0].len() as i16 || new_position.1 >= map.len() as i16 {
             break;
         }
 
@@ -43,7 +48,11 @@ fn predict_guard_path(map: &[Vec<char>], initial_position: Option<(i32, i32)>) -
             current_direction = (current_direction + 1) % 4;
         } else {
             current_position = new_position;
-            visited_positions.insert(current_position);
+
+            // Part 1
+            if initial_position.is_none() {
+                visited_positions.insert(current_position);
+            }
         }
 
         // `initial_position.is_some()` is a safety check against part 1, however, it does not appear
@@ -56,11 +65,11 @@ fn predict_guard_path(map: &[Vec<char>], initial_position: Option<(i32, i32)>) -
     (visited_positions, false)
 }
 
-fn get_start(map: &[Vec<char>]) -> (i32, i32) {
+fn get_start(map: &[Vec<char>]) -> (i16, i16) {
     for (y, row) in map.iter().enumerate() {
         for (x, &c) in row.iter().enumerate() {
             if c == '^' {
-                return (x as i32, y as i32);
+                return (x as i16, y as i16);
             }
         }
     }
@@ -68,21 +77,22 @@ fn get_start(map: &[Vec<char>]) -> (i32, i32) {
     panic!("No starting position of guard found...");
 }
 
-fn find_possible_obstructions(map: &[Vec<char>]) -> HashSet<(i32, i32)> {
-    let mut possible_obstruction_positions: HashSet<(i32, i32)> = HashSet::new();
-    let initial_position: (i32, i32) = get_start(map);
+fn find_possible_obstructions(map: &mut [Vec<char>]) -> HashSet<(i16, i16)> {
+    let mut possible_obstruction_positions: HashSet<(i16, i16)> = HashSet::new();
+    let initial_position: (i16, i16) = get_start(map);
 
     // let total_positions: usize = map.len() * map[0].len() - 1;
-    // let mut checked_positions: i32 = 0;
+    // let mut checked_positions: i16 = 0;
 
     // Place new obstruction 'O' where there is not yet a '#' (or it is the starting position).
-    for y in 0..map.len() as i32 {
-        for x in 0..map[0].len() as i32 {
+    for y in 0..map.len() as i16 {
+        for x in 0..map[0].len() as i16 {
             if (x, y) != initial_position && map[y as usize][x as usize] == '.' {
-                let mut obstructed_map: Vec<Vec<char>> = map.to_vec();
-                obstructed_map[y as usize][x as usize] = 'O';
+                map[y as usize][x as usize] = 'O';
 
-                let (_, loop_detected): (HashSet<(i32, i32)>, bool) = predict_guard_path(&obstructed_map, Some(initial_position));
+                let (_, loop_detected): (HashSet<(i16, i16)>, bool) = predict_guard_path(&map, Some(initial_position));
+
+                map[y as usize][x as usize] = '.';
 
                 // checked_positions += 1;
                 // if checked_positions % 130 == 0 {
@@ -102,15 +112,27 @@ fn find_possible_obstructions(map: &[Vec<char>]) -> HashSet<(i32, i32)> {
 #[aoc(year = "2024", day = "day06", part = "part1")]
 fn part1() -> String {
     let map: Vec<Vec<char>> = parse_input();
-    let (visited_positions, _): (HashSet<(i32, i32)>, bool) = predict_guard_path(&map, None);
+    let (visited_positions, _): (HashSet<(i16, i16)>, bool) = predict_guard_path(&map, None);
 
     visited_positions.len().to_string()
 }
 
 #[aoc(year = "2024", day = "day06", part = "part2")]
 fn part2() -> String {
-    let map: Vec<Vec<char>> = parse_input();
-    let possible_obstruction_positions = find_possible_obstructions(&map);
+    let mut map: Vec<Vec<char>> = parse_input();
+    let possible_obstruction_positions: HashSet<(i16, i16)> = find_possible_obstructions(&mut map);
+
+    // println!("{:?}", possible_obstruction_positions);
+    // for y in 0..map.len() as i16 {
+    //     for x in 0..map[0].len() as i16 {
+    //         if possible_obstruction_positions.contains(&(x, y)) {
+    //             print!("O");
+    //         } else {
+    //             print!("{}", map[y as usize][x as usize]);
+    //         }
+    //     }
+    //     println!("")
+    // }
 
     possible_obstruction_positions.len().to_string()
 }

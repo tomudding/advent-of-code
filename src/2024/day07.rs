@@ -5,7 +5,7 @@ use aoc_shared_functions::{get_registry, read_lines};
 
 fn can_make_equation_work(numbers: &[i64], target: i64, allow_concatenate: bool) -> bool {
     let n: usize = numbers.len();
-    let operators = if allow_concatenate {
+    let operators: Vec<&str> = if allow_concatenate {
         vec![
             "+",
             "*",
@@ -17,6 +17,7 @@ fn can_make_equation_work(numbers: &[i64], target: i64, allow_concatenate: bool)
             "*",
         ]
     };
+
     let mut stack: Vec<(i64, i64)> = Vec::new();
     stack.push((1, numbers[0]));
 

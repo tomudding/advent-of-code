@@ -14,4 +14,9 @@ aoc_proc_macros = { path = "./aoc_proc_macros" }
 chrono = "0.4.38"
 
 # For the actual puzzles:
+# 2024 - 03:
 regex = "1.11.1"
+
+# 2024 - 13:
+# Also required: sudo apt-get install coinor-cbc coinor-libcbc-dev
+good_lp = "1.10.0"

@@ -84,7 +84,9 @@ fn part2() -> String {
                 y += height;
             }
 
-            visited.insert((x, y));
+            if !visited.insert((x, y)) {
+                break;
+            }
         }
 
         // Check number of unique locations against number of robots.

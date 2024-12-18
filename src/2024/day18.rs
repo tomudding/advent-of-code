@@ -117,7 +117,7 @@ fn part2_binary_search() -> String {
     let start: (isize, isize) = (0, 0);
     let end: (isize, isize) = (grid_size, grid_size);
 
-    let mut low: isize = 0;
+    let mut low: isize = 1024; // Thanks to @JustSamuel; we already tested up to this point. Brings it down to ~800µs.
     let mut high: isize = bytes.len() as isize;
 
     let directions: [(isize, isize); 4] = [

@@ -3,7 +3,7 @@ use aoc_proc_macros::aoc;
 use aoc_shared_functions::{get_registry, read_lines};
 // END DO NOT EDIT - AOC
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 enum Gate {
     AND,
@@ -128,7 +128,7 @@ fn part2() -> String {
     sorted_z_values.sort_by(|a, b| a.0.cmp(&b.0));
 
     let differences: Vec<String> = sorted_expected_values.iter().zip(&sorted_z_values)
-        .map(|((exp_key, exp_val), (act_key, act_val))| {
+        .map(|((exp_key, exp_val), (_act_key, act_val))| {
             format!("{}: {} {} {}", exp_key, *exp_val as u64, *act_val as u64, if exp_val == act_val { "TRUE" } else { "FALSE" })
         })
         .collect();

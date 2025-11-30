@@ -3,7 +3,7 @@ extern crate aoc_proc_macros;
 
 use aoc_shared_functions::get_registry;
 use std::env::args;
-use std::fs::File;
+use std::fs::{File, create_dir_all};
 use std::io::{Read, Write};
 use std::path::Path;
 use chrono::{Datelike, Utc};
@@ -11,6 +11,7 @@ use chrono::{Datelike, Utc};
 // Dynamically load the solvers.
 aoc_proc_macros::include_year_modules!("2023");
 aoc_proc_macros::include_year_modules!("2024");
+aoc_proc_macros::include_year_modules!("2025");
 
 fn main() {
     let args: Vec<String> = args().collect();
@@ -21,9 +22,9 @@ fn main() {
         eprintln!("cargo run create <year> <day>");
         eprintln!("cargo run solve <year> <day> [part] [alternative implementation]");
         eprintln!("Examples:");
-        eprintln!("cargo run create 2024 1 - to create the file for day 1 in 2024");
-        eprintln!("cargo run solve 2024 1 - to run both parts of day 1");
-        eprintln!("cargo run solve 2024 1 1 for_loop - to run the for_loop implementation of part 1 of day 1");
+        eprintln!("cargo run create 2025 1 - to create the file for day 1 in 2024");
+        eprintln!("cargo run solve 2025 1 - to run both parts of day 1");
+        eprintln!("cargo run solve 2025 1 1 for_loop - to run the for_loop implementation of part 1 of day 1");
         return;
     }
 
@@ -59,6 +60,14 @@ fn list() {
 }
 
 fn create(year: &str, day: &str) {
+    let year: i32 = match year.parse() {
+        Ok(y) => y,
+        Err(_) => {
+            eprintln!("Year must be a valid integer.");
+            return;
+        }
+    };
+
     let day_number: u32 = day.parse().unwrap();
     let day_formatted: String = format!("day{:02}", day_number);
 
@@ -66,15 +75,18 @@ fn create(year: &str, day: &str) {
     let current_year: i32 = if now.month() == 12 {
         now.year()
     } else {
-        now.year() - 1
+        now.year()
     };
 
-    if !(2015..=current_year).contains(&year.parse::<i32>().unwrap()) {
+    if !(2015..=current_year).contains(&year) {
         eprintln!("Year must be between 2015 and {}.", current_year);
         return;
     }
 
-    if !(1..=25).contains(&day_number) {
+    // Day range depends on year since 2025.
+    let max_day = if year >= 2025 { 12 } else { 25 };
+
+    if !(1..=max_day).contains(&day_number) {
         eprintln!("Day must be between 1 and 25.");
         return;
     }
@@ -83,7 +95,9 @@ fn create(year: &str, day: &str) {
     let mut template_content: String = String::new();
     template_file.read_to_string(&mut template_content).expect("Unable to read template file");
 
-    let content: String = template_content.replace("{YEAR}", year).replace("{DAY}", &day_formatted);
+    let content: String = template_content
+        .replace("{YEAR}", &year.to_string())
+        .replace("{DAY}", &day_formatted);
 
     let src_path_str: String = format!("./src/{}/{}.rs", year, day_formatted);
     let input_example_path_str: String = format!("./inputs/{}/{}-example.txt", year, day_formatted);
@@ -117,6 +131,17 @@ fn check_file_existence(file_path: &Path) -> bool {
         eprintln!("File {} already exists...", file_path.display());
         true
     } else {
+        // Ensure parent directories exist before file creation.
+        if let Some(parent) = file_path.parent() {
+            if let Err(err) = create_dir_all(parent) {
+                eprintln!(
+                    "Failed to create parent directories for {}: {}",
+                    file_path.display(),
+                    err
+                );
+                return true; // treat as "exists" to stop further processing
+            }
+        }
         false
     }
 }

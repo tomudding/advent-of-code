@@ -16,8 +16,8 @@ fn part1() -> String {
 
         for j in (i + 1)..n {
             let (x2, y2): (usize, usize) = points[j];
-            let width: usize = (x1 as isize - x2 as isize).abs() as usize + 1;
-            let height: usize = (y1 as isize - y2 as isize).abs() as usize + 1;
+            let width: usize = (x1 as isize - x2 as isize).unsigned_abs() + 1;
+            let height: usize = (y1 as isize - y2 as isize).unsigned_abs() + 1;
             let area = width * height;
 
             if area > max_area {
@@ -87,8 +87,8 @@ fn part2() -> String {
                 .is_some();
 
             if !invalid {
-                let width: usize = (x1.max(x2) as isize - x1.min(x2) as isize).abs() as usize;
-                let height: usize = (y_max as isize - y_min as isize).abs() as usize;
+                let width: usize = (x1.max(x2) as isize - x1.min(x2) as isize).unsigned_abs();
+                let height: usize = (y_max as isize - y_min as isize).unsigned_abs();
                 let area: usize = (width + 1) * (height + 1);
 
                 if area > max_area {

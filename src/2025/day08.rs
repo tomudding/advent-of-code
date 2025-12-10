@@ -16,7 +16,7 @@ impl JunctionBox {
         let dy: i128 = (self.y - other.y) as i128;
         let dz: i128 = (self.z - other.z) as i128;
 
-        (dx * dx + dy * dy + dz * dz) as i128
+        dx * dx + dy * dy + dz * dz
     }
 }
 

@@ -66,7 +66,7 @@ fn is_invalid_id(n: usize) -> bool {
     // Be smart, determine max size of the repeated sequences (up to half of the original id).
     for p in 1..=s.len() / 2 {
         // An id is invalid if some potential sequence of length p fits in the id...
-        if s.len() % p == 0 {
+        if s.len().is_multiple_of(p) {
             // ...and we can construct such sequence of length p from first p digits.
             if s[..p].repeat(s.len() / p) == s {
                 return true;
@@ -93,8 +93,6 @@ fn parse_input() -> Vec<(usize, usize)> {
 
                 out.push((start, end));
             }
-
-            break;
         }
     }
 

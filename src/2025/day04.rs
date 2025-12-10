@@ -26,10 +26,9 @@ fn part1() -> String {
                     let ny = y as isize + dy;
                     let nx = x as isize + dx;
 
-                    if ny >= 0 && ny < rows as isize && nx >= 0 && nx < cols as isize {
-                        if grid[ny as usize][nx as usize] == '@' {
+                    if ny >= 0 && ny < rows as isize && nx >= 0 && nx < cols as isize
+                        && grid[ny as usize][nx as usize] == '@' {
                             adjacent_rolls += 1;
-                        }
                     }
                 }
 
@@ -69,10 +68,9 @@ fn part2() -> String {
                         let ny = y as isize + dy;
                         let nx = x as isize + dx;
 
-                        if ny >= 0 && ny < rows as isize && nx >= 0 && nx < cols as isize {
-                            if grid[ny as usize][nx as usize] == '@' {
+                        if ny >= 0 && ny < rows as isize && nx >= 0 && nx < cols as isize
+                            && grid[ny as usize][nx as usize] == '@' {
                                 adjacent_rolls += 1;
-                            }
                         }
                     }
 

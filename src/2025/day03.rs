@@ -9,7 +9,7 @@ fn part1() -> String {
 
     let total: u128 = banks
         .iter()
-        .map(|bank| max_bank_joltage(bank, 2) as u128)
+        .map(|bank| max_bank_joltage(bank, 2))
         .sum();
 
     total.to_string()

@@ -17,7 +17,7 @@ struct Machine {
 #[aoc(year = "2025", day = "day10", part = "part1")]
 fn part1() -> String {
     let machines: Vec<Machine> = parse_input();
-    let total: usize = machines.iter().map(|m| min_presses(m)).sum();
+    let total: usize = machines.iter().map(min_presses).sum();
 
     total.to_string()
 }
@@ -51,7 +51,7 @@ fn min_presses(machine: &Machine) -> usize {
 #[aoc(year = "2025", day = "day10", part = "part2")]
 fn part2() -> String {
     let machines: Vec<Machine> = parse_input();
-    let total: usize = machines.iter().map(|m| min_presses_ilp(m)).sum();
+    let total: usize = machines.iter().map(min_presses_ilp).sum();
 
     total.to_string()
 }
@@ -73,7 +73,7 @@ fn min_presses_ilp(machine: &Machine) -> usize {
 
         for (i, button) in machine.joltage_buttons.iter().enumerate() {
             if button.contains(&j) {
-                expr = expr + button_vars[i];
+                expr += button_vars[i];
             }
         }
 
